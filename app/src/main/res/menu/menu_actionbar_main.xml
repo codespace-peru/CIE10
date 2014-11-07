@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appcompat="http://schemas.android.com/apk/res-auto" >
+    
+    <item android:id="@+id/action_search"
+        android:title="@string/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:orderInCategory="1"
+        appcompat:actionViewClass="android.support.v7.widget.SearchView"
+        appcompat:showAsAction="always|collapseActionView" />
+
+    <item android:id="@+id/action_voice"
+        android:title="@string/action_voz"
+        android:icon="@drawable/ic_action_mic"
+        android:orderInCategory="3"
+        appcompat:showAsAction="always|withText" />
+
+    <item android:id="@+id/action_favorites"
+        android:title="@string/action_favorites"
+        android:icon="@drawable/ic_action_important"
+        android:orderInCategory="4"
+        appcompat:showAsAction="always|withText" />
+</menu>

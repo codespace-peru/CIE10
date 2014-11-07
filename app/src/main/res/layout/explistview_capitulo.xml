@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvNumCapitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/tvTitle1Group"
+        android:layout_width="@dimen/ancho_codigocapitulo"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_group"
+        android:textColor="@color/text_color1"
+        android:gravity="center|center_vertical"
+        android:background="@color/LeftList"
+        android:text="Cod"
+        />
+
+    <TextView
+        android:id="@+id/tvTitle2Group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:textStyle="bold"
+        android:paddingLeft="5dp"
+        android:textColor="@color/text_color1"
+        android:text="Descripcion"
+        android:textSize="@dimen/text_group"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:background="@color/background"/>
+</LinearLayout>

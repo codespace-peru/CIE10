@@ -1,0 +1,46 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginBottom="50dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/main_title_app"
+            android:gravity="center|center_vertical"
+            android:paddingBottom="5dp"
+            android:textStyle="bold"
+            android:background="@color/background_title"
+            android:textSize="@dimen/title"/>
+
+        <ExpandableListView
+            android:id="@+id/explvMain"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="1dp"
+            android:divider="@color/azul"
+            android:childDivider="@color/azul_aciano">
+        </ExpandableListView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_alignParentBottom="true">
+
+        <com.google.android.gms.ads.AdView android:id="@+id/adViewMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            ads:adUnitId="ca-app-pub-4549935446415170/3447821246"
+            ads:adSize="BANNER"/>
+    </LinearLayout>
+</RelativeLayout>

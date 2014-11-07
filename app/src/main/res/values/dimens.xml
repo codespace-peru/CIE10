@@ -1,0 +1,11 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="title">20dp</dimen>
+    <dimen name="subtitle">18dp</dimen>
+    <dimen name="text_group">17dp</dimen>
+    <dimen name="text_subgroup">16dp</dimen>
+    <dimen name="text_simple">16dp</dimen>
+    <dimen name="ancho_codigocapitulo">40dp</dimen>
+    <dimen name="ancho_codigogrupo">85dp</dimen>
+    <dimen name="ancho_codigocategoria">46dp</dimen>
+    </resources>
