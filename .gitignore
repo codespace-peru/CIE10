@@ -7,3 +7,5 @@
 .DS_Store
 /build
 /app/src/main/res/values/strings.xml
+/app/src/main/res/xml/ecommerce_tracker.xml
+/app/src/main/res/xml/global_tracker.xml
