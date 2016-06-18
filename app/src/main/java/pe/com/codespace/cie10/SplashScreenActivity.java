@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SplashScreenActivity extends Activity {
 
@@ -24,7 +22,7 @@ public class SplashScreenActivity extends Activity {
             @Override
             public void run() {
                 try{
-                    sleep(2000);
+                    sleep(SPLASH_SCREEN_DELAY);
                 }
                 catch (InterruptedException e){
                     e.printStackTrace();

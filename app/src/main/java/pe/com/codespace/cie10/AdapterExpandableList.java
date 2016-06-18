@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by Carlos on 23/11/13.
+ * Creado por Carlos on 23/11/13.
  */
-public class AdapterExpandableList extends BaseExpandableListAdapter {
+class AdapterExpandableList extends BaseExpandableListAdapter {
     private Context context;
     private List<Tools.RowCapitulo> _listHeader;
     private HashMap<Tools.RowCapitulo, List<Tools.RowGrupo>> _listChild;
@@ -78,9 +78,6 @@ public class AdapterExpandableList extends BaseExpandableListAdapter {
         holder.myNumCap.setText(String.valueOf(temp.numCap));
         holder.myTitle1.setText(temp.title1);
         holder.myTitle2.setText(temp.title2);
-        //row.setPadding(-30,0,0,0);
-
-        //row.setBackgroundColor(Color.BLUE);
         return row;
     }
 
@@ -108,8 +105,6 @@ public class AdapterExpandableList extends BaseExpandableListAdapter {
             holder.myCodInicial.setText(temp.codInicial);
             holder.myCodFinal.setText(temp.codFinal);
         }
-        //row.setPadding(20,0,0,0);
-        //row.setBackgroundColor(Color.RED);
         return row;
     }
 

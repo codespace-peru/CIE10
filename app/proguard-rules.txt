@@ -16,16 +16,14 @@
 #   public *;
 #}
 
--dontwarn android.support.v4.**
--keep class android.support.v4.** { *; }
--dontwarn android.support.v7.**
--keep class android.support.v7.** { *; }
+-keep class !android.support.v7.internal.view.menu.**,android.support.** {*;}
 
 ##Google Admobs
 -keep public class com.google.android.gms.ads.** { public *;}
 -keep public class com.google.ads.** { public *;}
 
 ##Google Play Services
+-keep public class com.google.android.gms.analytics.** {public *;}
 -keep class * extends java.util.ListResourceBundle { protected Object[][] getContents();}
 -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable { public static final *** NULL;}
 -keepnames @com.google.android.gms.common.annotation.KeepName class *

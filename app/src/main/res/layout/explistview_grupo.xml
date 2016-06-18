@@ -3,50 +3,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/min_height"
+    android:weightSum="100">
 
     <TextView
         android:id="@+id/tvNumeroCapitulo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:visibility="gone"/>
     <TextView
         android:id="@+id/tvNumeroGrupo"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:visibility="gone"/>
     <TextView
         android:id="@+id/tvCodInicialItem"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:visibility="gone"/>
     <TextView
         android:id="@+id/tvCodFinalItem"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:visibility="gone"/>
     <TextView
         android:id="@+id/tvTitle1Item"
-        android:layout_width="@dimen/ancho_codigogrupo"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:textSize="@dimen/text_subgroup"
-        android:textColor="@color/text_color1"
-        android:text="Titulo"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="20"
+        android:textSize="@dimen/textsize_small"
+        android:textColor="@color/textIcons"
+        android:text="@string/dummy_text"
         android:gravity="center|center_vertical"
-        android:background="@color/LeftList1"/>
+        android:background="@color/primaryColor"
+        android:paddingTop="@dimen/padding_medium"
+        android:paddingBottom="@dimen/padding_medium"/>
 
     <TextView
         android:id="@+id/tvTitle2Item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:paddingLeft="5dp"
-        android:textColor="@color/text_color1"
-        android:text="Descripcion"
-        android:textSize="@dimen/text_subgroup"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="80"
+        android:paddingLeft="@dimen/padding_small"
+        android:textColor="@color/primaryText"
+        android:text="@string/dummy_text"
+        android:textSize="@dimen/textsize_small"
         android:gravity="center_vertical"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:background="@color/background"/>
+        android:background="@drawable/selector"/>
 </LinearLayout>

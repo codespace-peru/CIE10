@@ -3,51 +3,40 @@
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/lightPrimaryColor">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="50dp">
-        <TextView
-            android:id="@+id/tvTitleText"
+        <include android:id="@+id/myToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Test"
-            android:gravity="center|center_vertical"
-            android:paddingBottom="5dp"
-            android:textStyle="bold"
-            android:background="@color/background_title"
-            android:textSize="@dimen/title"/>
+            android:layout_alignParentTop="true"
+            layout="@layout/toolbar"/>
+
         <TextView
             android:id="@+id/tvFavoritos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background"
-            android:textSize="@dimen/text_group"
+            android:layout_below="@+id/myToolbar"
+            android:background="@color/lightPrimaryColor"
+            android:textSize="@dimen/textsize_medium"
             android:visibility="gone"/>
 
         <ListView
             android:id="@+id/lvText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:divider="@color/azul"
+            android:layout_above="@+id/adViewText"
+            android:layout_below="@+id/myToolbar"
+            android:divider="@color/dividerColor"
             android:dividerHeight="1dp">
         </ListView>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_alignParentBottom="true">
 
-        <com.google.android.gms.ads.AdView android:id="@+id/adViewText"
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adViewText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            ads:adUnitId="ca-app-pub-4549935446415170/3447821246"
-            ads:adSize="BANNER"/>
-    </LinearLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adUnitId="@string/banner_ad_unit_id"
+            ads:adSize="SMART_BANNER"/>
 
 </RelativeLayout>

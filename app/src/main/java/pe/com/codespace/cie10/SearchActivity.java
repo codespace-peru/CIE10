@@ -4,23 +4,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchActivity extends ActionBarActivity implements SearchView.OnQueryTextListener {
+public class SearchActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     SQLiteHelperCIE10 myDBHelper;
     String searchText;
@@ -30,13 +33,27 @@ public class SearchActivity extends ActionBarActivity implements SearchView.OnQu
     String[][] resultados;
     AdapterListView myListAdapter;
     Tools.RowCategoria rowCategoria;
-    List<Tools.RowCategoria> myListCategorias = new ArrayList<Tools.RowCategoria>();
-    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+    List<Tools.RowCategoria> myListCategorias = new ArrayList<>();
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.myToolbar);
+        setSupportActionBar(toolbar);
+
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle(R.string.search_title);
+        }
+
         Intent intent = getIntent();
         searchText = intent.getExtras().getString("searchText");
         TextView textView = (TextView) findViewById(R.id.tvResultados);
@@ -44,18 +61,18 @@ public class SearchActivity extends ActionBarActivity implements SearchView.OnQu
         resultados = myDBHelper.searchTexto(searchText);
         switch (resultados.length){
             case 0:
-                textView.setText(Html.fromHtml("No se encontraron ocurrencias de <b><i>'" + searchText + "'</i></b>"));
+                textView.setText(Html.fromHtml(getResources().getString(R.string.sin_ocurrencias) + " <b><i>'" + searchText + "'</i></b>"));
                 break;
             case 1:
-                textView.setText(Html.fromHtml("Se muestra 1 ocurrencia de <b><i>'" + searchText + "'</i></b>"));
+                textView.setText(Html.fromHtml(getResources().getString(R.string.una_ocurrencia) +  " <b><i>'" + searchText + "'</i></b>"));
                 break;
             default:
-                textView.setText(Html.fromHtml("Se muestran " + resultados.length + " ocurrencias de <b><i>'" + searchText + "'</i></b>"));
+                textView.setText(Html.fromHtml(getResources().getString(R.string.show_ocurrencias1) + " " + resultados.length + " " + getResources().getString(R.string.show_ocurrencias2) + " <b><i>'" + searchText + "'</i></b>"));
                 break;
         }
 
-        for(int i=0;i<resultados.length;i++){
-            rowCategoria = new Tools.RowCategoria(Integer.parseInt(resultados[i][0]),Integer.parseInt(resultados[i][1]),resultados[i][2],resultados[i][3],Integer.parseInt(resultados[i][4]));
+        for (String[] resultado : resultados) {
+            rowCategoria = new Tools.RowCategoria(Integer.parseInt(resultado[0]), Integer.parseInt(resultado[1]), resultado[2], resultado[3], Integer.parseInt(resultado[4]));
             myListCategorias.add(rowCategoria);
         }
         myList = (ListView) findViewById(R.id.lvSearchText);
@@ -66,16 +83,24 @@ public class SearchActivity extends ActionBarActivity implements SearchView.OnQu
         AdView adView = (AdView)this.findViewById(R.id.adViewSearch);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
+
+        //Analytics
+        Tracker tracker = ((AnalyticsApplication)  getApplication()).getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
+        String nameActivity = getApplicationContext().getPackageName() + "." + this.getClass().getSimpleName();
+        tracker.setScreenName(nameActivity);
+        tracker.enableAdvertisingIdCollection(true);
+        tracker.send(new HitBuilders.AppViewBuilder().build());
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == MyValues.VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (matches.size() > 0){
                 Intent intent = new Intent(this,SearchActivity.class);
-                intent.putExtra("searchText",Tools.remove(matches.get(0).toString()));
+                intent.putExtra("searchText", matches.get(0).toString()); //Tools.remove(matches.get(0).toString()));
+                finish();
                 this.startActivity(intent);
             }
         }
@@ -88,7 +113,7 @@ public class SearchActivity extends ActionBarActivity implements SearchView.OnQu
         final MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint("Búsqueda...");
+        searchView.setQueryHint(getResources().getString(R.string.action_search) + "...");
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -104,25 +129,23 @@ public class SearchActivity extends ActionBarActivity implements SearchView.OnQu
         int id = item.getItemId();
         switch (id){
             case R.id.action_voice:
-                SpeechRecognitionHelper speech = new SpeechRecognitionHelper();
-                speech.run(this);
+                SpeechRecognitionHelper.run(this);
                 break;
             case R.id.action_favorites:
-                Intent intent = new Intent(SearchActivity.this, TextActivity.class);
-                intent.putExtra("favorito",true);
-                this.startActivity(intent);
+                Tools.MostrarFavoritos(this);
+                break;
+            case R.id.action_share:
+                Tools.ShareApp(this);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onQueryTextSubmit(String query) {
-        Intent intent = new Intent(this,SearchActivity.class);
-        intent.putExtra("searchText", query);
+    public boolean onQueryTextSubmit(String query) {        
         this.finish();
-        this.startActivity(intent);
-        return false;
+        Tools.QuerySubmit(this, menuItem, query);
+        return true;
     }
 
     @Override
@@ -130,15 +153,5 @@ public class SearchActivity extends ActionBarActivity implements SearchView.OnQu
         return false;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        EasyTracker.getInstance(this).activityStart(this);
-    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        EasyTracker.getInstance(this).activityStop(this);
-    }
 }

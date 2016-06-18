@@ -1,27 +1,33 @@
 package pe.com.codespace.cie10;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class TextActivity extends ActionBarActivity implements SearchView.OnQueryTextListener {
+public class TextActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     SQLiteHelperCIE10 myDBHelper;
     List<Tools.RowCategoria> miArray;
@@ -33,16 +39,24 @@ public class TextActivity extends ActionBarActivity implements SearchView.OnQuer
     int capitulo;
     int grupo;
     Context context;
-    boolean favorites = false;
-    TextView titulo;
+    
     AdapterListView myListAdapter;
     ListView myList;
-    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.myToolbar);
+        setSupportActionBar(toolbar);
+
+
         context = this;
         myDBHelper = SQLiteHelperCIE10.getInstance(this);
         myList = (ListView) findViewById(R.id.lvText);
@@ -52,59 +66,73 @@ public class TextActivity extends ActionBarActivity implements SearchView.OnQuer
         nombreGrupo = getIntent().getExtras().getString("nombregrupo");
         capitulo = getIntent().getExtras().getInt("numerocapitulo");
         grupo = getIntent().getExtras().getInt("numerogrupo");
-        favorites = getIntent().getExtras().getBoolean("favorito");
-        titulo = (TextView) findViewById(R.id.tvTitleText);
-        if(favorites){
-           prepararFavoritos();
-            titulo.setText("Mis Favoritos");
-        }else{
-            prepararData();
-            titulo.setText(nombreGrupo);
+        prepararData();
+
+        if(getSupportActionBar()!=null){
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setTitle(nombreGrupo);
         }
 
-        myListAdapter = new AdapterListView(this,miArray);
-        myList.setAdapter(myListAdapter);
+        cargarData();
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String cod = ((TextView) view.findViewById(R.id.tvCodCategoria)).getText().toString();
+                String nombre = ((TextView) view.findViewById(R.id.tvNombreCategoria)).getText().toString();
+                alert.setTitle(cod);
+                alert.setMessage(nombre);
+                alert.setNegativeButton(R.string.title_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+                alert.show();
+            }
+        });
 
         //Agregar el adView
         AdView adView = (AdView)this.findViewById(R.id.adViewText);
         AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
 
+        //Analytics
+        Tracker tracker = ((AnalyticsApplication)  getApplication()).getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
+        String nameActivity = getApplicationContext().getPackageName() + "." + this.getClass().getSimpleName();
+        tracker.setScreenName(nameActivity);
+        tracker.enableAdvertisingIdCollection(true);
+        tracker.send(new HitBuilders.AppViewBuilder().build());
+
     }
 
-    private void prepararData() {
+    public void prepararData() {
         String[][] rows = myDBHelper.getCategorias(codInicial,codFinal);
-        miArray = new ArrayList<Tools.RowCategoria>();
+        miArray = new ArrayList<>();
+        boolean flag;
+        int fav;
 
-        for(int i=0; i<rows.length;i++){
-            Tools.RowCategoria rowCategoria = new Tools.RowCategoria(capitulo,grupo,rows[i][0],rows[i][1],Integer.parseInt(rows[i][2]));
+        for (String[] row : rows) {
+            flag = myDBHelper.es_favorito(row[0]);
+            if(flag)  fav=1; else fav=0;
+            Tools.RowCategoria rowCategoria = new Tools.RowCategoria(capitulo, grupo, row[0], row[1], fav);
             miArray.add(rowCategoria);
         }
     }
 
-    private void prepararFavoritos() {
-        String[][] rows = myDBHelper.getFavoritos();
-        miArray = new ArrayList<Tools.RowCategoria>();
-        TextView textView = (TextView) findViewById(R.id.tvFavoritos);
-
-        for(int i=0; i<rows.length;i++){
-            Tools.RowCategoria rowCategoria = new Tools.RowCategoria(capitulo,grupo,rows[i][0],rows[i][1],Integer.parseInt(rows[i][2]));
-            miArray.add(rowCategoria);
-        }
-        if(miArray.size()==0){
-            textView.setVisibility(View.VISIBLE);
-            textView.setText("No se encontraron Favoritos");
-        }
-    }
+	public void cargarData(){
+        myListAdapter = new AdapterListView(this, miArray);
+        myList.setAdapter(myListAdapter);
+	}
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == MyValues.VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             ArrayList matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (matches.size() > 0){
                 Intent intent = new Intent(this,SearchActivity.class);
-                intent.putExtra("searchText",Tools.remove(matches.get(0).toString()));
+                intent.putExtra("searchText",matches.get(0).toString());
                 this.startActivity(intent);
             }
         }
@@ -115,13 +143,10 @@ public class TextActivity extends ActionBarActivity implements SearchView.OnQuer
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_actionbar_main, menu);
         final MenuItem searchItem = menu.findItem(R.id.action_search);
-        if(favorites==true){
-            MenuItem favoriteItem = menu.findItem(R.id.action_favorites);
-            favoriteItem.setVisible(false);
-        }
+        
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint("Búsqueda...");
+        searchView.setQueryHint(getResources().getString(R.string.action_search) + "...");
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -137,26 +162,22 @@ public class TextActivity extends ActionBarActivity implements SearchView.OnQuer
         int id = item.getItemId();
         switch (id){
             case R.id.action_voice:
-                SpeechRecognitionHelper speech = new SpeechRecognitionHelper();
-                speech.run(this);
+                SpeechRecognitionHelper.run(this);
                 break;
             case R.id.action_favorites:
-                Intent intent = new Intent(TextActivity.this, TextActivity.class);
-                intent.putExtra("favorito",true);
-                this.startActivity(intent);
+                Tools.MostrarFavoritos(this);
+                break;
+            case R.id.action_share:
+                Tools.ShareApp(this);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public boolean onQueryTextSubmit(String query) {
-        Intent intent = new Intent(this,SearchActivity.class);
-        intent.putExtra("searchText", query);
-        //this.finish();
-        this.startActivity(intent);
-        MenuItemCompat.collapseActionView(menuItem);
-        return false;
+    public boolean onQueryTextSubmit(String query) {        
+        Tools.QuerySubmit(this, menuItem, query);
+        return true;
     }
 
     @Override
@@ -164,21 +185,11 @@ public class TextActivity extends ActionBarActivity implements SearchView.OnQuer
         return false;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        EasyTracker.getInstance(this).activityStart(this);
-        if(!favorites){
-            prepararData();
-            titulo.setText(nombreGrupo);
-            myListAdapter = new AdapterListView(this,miArray);
-            myList.setAdapter(myListAdapter);
-        }
-    }
+	@Override
+    protected void onResume() {
+        super.onResume();
+        prepararData();
+        cargarData();
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        EasyTracker.getInstance(this).activityStop(this);
     }
 }

@@ -6,16 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
 
 
 /**
- * Created by Carlos on 17/02/14.
+ * Creado por Carlos on 17/02/14.
  */
-public class AdapterListView extends ArrayAdapter {
+public class AdapterListView extends ArrayAdapter<Tools.RowCategoria> {
 
     private final Context context;
     private final List<Tools.RowCategoria> values;
@@ -35,7 +34,7 @@ public class AdapterListView extends ArrayAdapter {
 
         if(view==null){
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.listview_categoria,null);
+            view = inflater.inflate(R.layout.listview_categoria, parent, false);
             holder = new Tools.TextHolderCategoria(view);
             view.setTag(holder);
         }
@@ -48,10 +47,13 @@ public class AdapterListView extends ArrayAdapter {
         holder.myNumGrupo.setText(String.valueOf(arts.numGroup));
         holder.myCodigo.setText(arts.codigoCategoria);
         holder.myNombre.setText(arts.nombreCategoria);
-        if(arts.favorito==1){
-            holder.myFavorite.setImageResource(R.drawable.favorito_on);
-        }else{
-            holder.myFavorite.setImageResource(R.drawable.favorito_off);
+        switch (arts.favorito){
+            case 0:
+                holder.myFavorite.setImageResource(R.drawable.favorito_off);
+                break;
+            case 1:
+                holder.myFavorite.setImageResource(R.drawable.favorito_on);
+                break;
         }
         holder.myFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,11 +64,15 @@ public class AdapterListView extends ArrayAdapter {
                 if (flag) {
                     myDBHelper.eliminarFavorito(codCat);
                     imageView.setImageResource(R.drawable.favorito_off);
-                    Toast.makeText(context, "Se eliminó " + codCat + " de Favoritos", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, codCat + " " + context.getResources().getString(R.string.text_del_favorites) , Toast.LENGTH_LONG).show();
                 } else {
                     myDBHelper.setFavorito(codCat);
                     imageView.setImageResource(R.drawable.favorito_on);
-                    Toast.makeText(context, "Se agregó " + codCat + " a Favoritos", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, codCat + " " + context.getResources().getString(R.string.text_add_favorites), Toast.LENGTH_LONG).show();
+                }
+				if (context instanceof TextActivity) {
+                    ((TextActivity) context).prepararData();
+                    ((TextActivity) context).cargarData();
                 }
             }
         });

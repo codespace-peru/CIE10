@@ -11,12 +11,10 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.speech.RecognizerIntent;
 
-public class SpeechRecognitionHelper {
+class SpeechRecognitionHelper {
 
-    private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
-	
 	public static void run(Activity ownerActivity) {		
-		if (isSpeechRecognitionActivityPresented(ownerActivity) == true) {			
+		if (isSpeechRecognitionActivityPresented(ownerActivity)) {
 			startRecognitionActivity(ownerActivity);
 		} else {			
 			installGoogleVoiceSearch(ownerActivity);
@@ -31,8 +29,9 @@ public class SpeechRecognitionHelper {
 			if (activities.size() != 0) {
 				return true;			
 			}
-		} catch (Exception e) {
-			
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			throw ex;
 		}
 		return false;
 	}
@@ -43,7 +42,7 @@ public class SpeechRecognitionHelper {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);	
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "es-ES");
-        ownerActivity.startActivityForResult(intent,VOICE_RECOGNITION_REQUEST_CODE);
+        ownerActivity.startActivityForResult(intent,MyValues.VOICE_RECOGNITION_REQUEST_CODE);
 	}
 	
 	private static void installGoogleVoiceSearch(final Activity ownerActivity) {
@@ -55,9 +54,10 @@ public class SpeechRecognitionHelper {
 				public void onClick(DialogInterface dialog, int which) {	
 					try {
 						Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.voicesearch"));						
-						intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+						intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
 						ownerActivity.startActivity(intent);
 					 } catch (Exception ex) {
+						ex.printStackTrace();
 					 }					
 				}})
 				

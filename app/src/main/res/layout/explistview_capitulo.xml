@@ -3,7 +3,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:minHeight="@dimen/min_height"
+    android:weightSum="20">
 
     <TextView
         android:id="@+id/tvNumCapitulo"
@@ -12,29 +14,26 @@
         android:visibility="gone"/>
     <TextView
         android:id="@+id/tvTitle1Group"
-        android:layout_width="@dimen/ancho_codigocapitulo"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:textStyle="bold"
-        android:textSize="@dimen/text_group"
-        android:textColor="@color/text_color1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:textSize="@dimen/textsize_medium"
+        android:textColor="@color/textIcons"
         android:gravity="center|center_vertical"
-        android:background="@color/LeftList"
-        android:text="Cod"
-        />
+        android:background="@color/primaryColorDark"
+        android:paddingTop="@dimen/padding_medium"
+        android:paddingBottom="@dimen/padding_medium"
+        android:text="@string/dummy_text"/>
 
     <TextView
         android:id="@+id/tvTitle2Group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:textStyle="bold"
-        android:paddingLeft="5dp"
-        android:textColor="@color/text_color1"
-        android:text="Descripcion"
-        android:textSize="@dimen/text_group"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="18"
+        android:paddingLeft="@dimen/padding_small"
+        android:textColor="@color/primaryText"
+        android:text="@string/dummy_text"
+        android:textSize="@dimen/textsize_medium"
         android:gravity="center_vertical"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:background="@color/background"/>
+        android:background="@drawable/selector"/>
 </LinearLayout>

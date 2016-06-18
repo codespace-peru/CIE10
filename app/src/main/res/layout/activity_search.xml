@@ -2,49 +2,43 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/lightPrimaryColor">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginBottom="50dp">
-        <TextView
-            android:text="@string/search_title"
+        <include android:id="@+id/myToolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textStyle="bold"
-            android:textSize="@dimen/title"
-            android:background="@color/background_title"
-            android:paddingBottom="5dp"/>
+            android:layout_alignParentTop="true"
+            layout="@layout/toolbar"/>
+
         <TextView
             android:id="@+id/tvResultados"
             android:text="@string/search_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="16dp"
-            android:background="@color/background_title"
-            android:layout_marginBottom="5dp"/>
+            android:layout_below="@+id/myToolbar"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:background="@color/lightPrimaryColor"
+            android:textColor="@color/primaryText"
+            android:textSize="@dimen/textsize_medium"/>
 
         <ListView
             android:id="@+id/lvSearchText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/adViewSearch"
+            android:layout_below="@+id/tvResultados"
+            android:divider="@color/dividerColor"
+            android:dividerHeight="1dp">
         </ListView>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_alignParentBottom="true">
 
-        <com.google.android.gms.ads.AdView android:id="@+id/adViewSearch"
+        <com.google.android.gms.ads.AdView
+			android:id="@+id/adViewSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            ads:adUnitId="ca-app-pub-4549935446415170/3447821246"
-            ads:adSize="BANNER"/>
-    </LinearLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adUnitId="@string/banner_ad_unit_id"
+            ads:adSize="SMART_BANNER"/>
+
 </RelativeLayout>

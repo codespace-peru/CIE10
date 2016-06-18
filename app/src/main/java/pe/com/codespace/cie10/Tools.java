@@ -1,49 +1,23 @@
 package pe.com.codespace.cie10;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-//import android.support.v4.view.MenuItemCompat;
-//import android.support.v7.widget.SearchView;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.view.Menu;
+import android.net.Uri;
+import android.support.v4.view.MenuItemCompat;
+
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
+
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.Normalizer;
-import java.util.regex.Pattern;
 
 /**
- * Created by Carlos on 01/03/14.
+ * Created por Carlos on 01/03/14.
  */
 public class Tools {
 
-    public static boolean isNumeric(String str)
-    {
-        try
-        {
-            double d = Double.parseDouble(str);
-            return true;
-        }
-        catch(NumberFormatException nfe)
-        {
-            return false;
-        }
-    }
-
-
+    
     public static class RowCapitulo {
         int numCap;
         String title1;
@@ -133,24 +107,34 @@ public class Tools {
         }
     }
 
-    public static String remove(String input) {
+	public static void MostrarFavoritos(Context context){
+        Intent intent = new Intent(context, FavoritosActivity.class);
+        context.startActivity(intent);
+    }
+
+	public static void QuerySubmit(Context context, MenuItem menuItem, String query){
+        Intent intent = new Intent(context, SearchActivity.class);
+        intent.putExtra("searchText", query);
+        context.startActivity(intent);
+        MenuItemCompat.collapseActionView(menuItem);
+    }
+
+	public static void ShareApp(Context context){
+        Social.share(context, context.getResources().getString(R.string.action_share), context.getResources().getString(R.string.share_description) + " " + Uri.parse("https://play.google.com/store/apps/details?id=pe.com.codespace.cie10"));
+    }
+
+
+    /*public static String remove(String input) {
         // Cadena de caracteres original a sustituir.
-        String original = "áàäéèëíìïóòöúùuÁÀÄÉÈËÍÌÏÓÒÖÚÙÜçÇ";
+        String original = "áéíóúÁÉÍÓÚ";
         // Cadena de caracteres ASCII que reemplazarán los originales.
-        String ascii = "aaaeeeiiiooouuuAAAEEEIIIOOOUUUcC";
+        String ascii = "aeiouAEIOU";
         String output = input;
         for (int i=0; i<original.length(); i++) {
             // Reemplazamos los caracteres especiales.
             output = output.replace(original.charAt(i), ascii.charAt(i));
         }//for i
         return output;
-    }
+    }   */
 
-    public static String remove2(String input) {
-        // Descomposición canónica
-        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-        // Nos quedamos únicamente con los caracteres ASCII
-        Pattern pattern = Pattern.compile("\\P{ASCII}");
-        return pattern.matcher(normalized).replaceAll("");
-    }
 }
