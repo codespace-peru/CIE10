@@ -1,7 +1,10 @@
 package pe.com.codespace.cie10;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.speech.RecognizerIntent;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.content.Intent;
@@ -16,14 +19,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
@@ -42,8 +42,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.myToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         myDBHelper = SQLiteHelperCIE10.getInstance(this);
         prepararData();
         AdapterExpandableList myAdapter = new AdapterExpandableList(this,listHeader,listChild);
+        assert myExpand != null;
         myExpand.setAdapter(myAdapter);
         myExpand.setGroupIndicator(null);
 
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 String grupo = ((TextView) view.findViewById(R.id.tvTitle2Item)).getText().toString();
                 intent.putExtra("numerocapitulo",groupPosition + 1);
                 intent.putExtra("numerogrupo",childPosition + 1);
-                intent.putExtra("nombregrupo",grupo + "\n(" +codInicial + "-" + codFinal + ")");
+                intent.putExtra("nombregrupo",grupo);
                 intent.putExtra("codigoInicial", codInicial);
                 //Concatenamos el 9 para que considere todas las categorías
                 codFinal = codFinal + "9";
@@ -88,14 +90,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         //Agregar el adView
         AdView adView = (AdView)this.findViewById(R.id.adViewMain);
         AdRequest adRequest = new AdRequest.Builder().build();
+        assert adView != null;
         adView.loadAd(adRequest);
-		
-		//Analytics
-        Tracker tracker = ((AnalyticsApplication)  getApplication()).getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
-        String nameActivity = getApplicationContext().getPackageName() + "." + this.getClass().getSimpleName();
-        tracker.setScreenName(nameActivity);
-        tracker.enableAdvertisingIdCollection(true);
-        tracker.send(new HitBuilders.AppViewBuilder().build());
+
     }
 
     private void prepararData() {

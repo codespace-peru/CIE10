@@ -1,42 +1,29 @@
-<RelativeLayout
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightPrimaryColor">
+    android:fitsSystemWindows="true"
+    tools:context=".TextActivity">
 
-        <include android:id="@+id/myToolbar"
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            layout="@layout/toolbar"/>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleTextAppearance="@style/MyTitleTextStyle"
+            app:subtitleTextAppearance="@style/MyTitleTextStyle"/>
 
-        <TextView
-            android:id="@+id/tvFavoritos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/myToolbar"
-            android:background="@color/lightPrimaryColor"
-            android:textSize="@dimen/textsize_medium"
-            android:visibility="gone"/>
+    </android.support.design.widget.AppBarLayout>
 
-        <ListView
-            android:id="@+id/lvText"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/adViewText"
-            android:layout_below="@+id/myToolbar"
-            android:divider="@color/dividerColor"
-            android:dividerHeight="1dp">
-        </ListView>
+    <include layout="@layout/content_activity_text"/>
 
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adViewText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            ads:adUnitId="@string/banner_ad_unit_id"
-            ads:adSize="SMART_BANNER"/>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

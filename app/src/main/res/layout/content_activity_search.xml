@@ -1,0 +1,38 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:background="@color/lightPrimaryColor">
+
+        <TextView
+            android:id="@+id/tvResultados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_small"
+            android:background="@color/lightPrimaryColor"
+            android:textColor="@color/primaryText"
+            android:textSize="@dimen/textsize_medium"/>
+
+        <ListView
+            android:id="@+id/lvSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/adViewSearch"
+            android:layout_below="@+id/tvResultados"
+            android:divider="@color/dividerColor"
+            android:dividerHeight="1dp">
+        </ListView>
+
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adViewSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            ads:adUnitId="@string/banner_ad_unit_id"
+            ads:adSize="SMART_BANNER"/>
+
+</RelativeLayout>

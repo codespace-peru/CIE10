@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 
 /**
- * Created por Carlos on 01/03/14.
+ * Created por Carlos el 01/03/14.
  */
 public class Tools {
 
@@ -22,10 +22,14 @@ public class Tools {
         int numCap;
         String title1;
         String title2;
+        String codInicial;
+        String codFinal;
         RowCapitulo(int num1, String title1, String title2, String codIni, String codFin){
             this.numCap = num1;
             this.title1 = title1;
-            this.title2 = title2 + " (" + codIni + "-" + codFin + ")";
+            this.title2 = title2;
+            this.codInicial = codIni;
+            this.codFinal = codFin;
         }
     }
 
@@ -51,8 +55,8 @@ public class Tools {
         int numGroup;
         String codigoCategoria;
         String nombreCategoria;
-        Integer favorito;
-        RowCategoria(int num1, int num2, String cod, String nomb, Integer fav){
+        int favorito;
+        RowCategoria(int num1, int num2, String cod, String nomb, int fav){
             this.numCap = num1;
             this.numGroup = num2;
             this.codigoCategoria = cod;
@@ -65,11 +69,17 @@ public class Tools {
         TextView myNumCap;
         TextView myTitle1;
         TextView myTitle2;
+        TextView myCodInicial;
+        TextView myCodFinal;
+        ImageView myImageCap;
         TextHolderCapitulo(View v)
         {
             myNumCap = (TextView) v.findViewById(R.id.tvNumCapitulo);
             myTitle1 = (TextView) v.findViewById(R.id.tvTitle1Group);
             myTitle2 = (TextView) v.findViewById(R.id.tvTitle2Group);
+            myCodInicial = (TextView) v.findViewById(R.id.tvCodInicialItem);
+            myCodFinal = (TextView) v.findViewById(R.id.tvCodFinalItem);
+            myImageCap = (ImageView) v.findViewById(R.id.imgVerCapitulo);
         }
     }
 
@@ -122,19 +132,5 @@ public class Tools {
 	public static void ShareApp(Context context){
         Social.share(context, context.getResources().getString(R.string.action_share), context.getResources().getString(R.string.share_description) + " " + Uri.parse("https://play.google.com/store/apps/details?id=pe.com.codespace.cie10"));
     }
-
-
-    /*public static String remove(String input) {
-        // Cadena de caracteres original a sustituir.
-        String original = "áéíóúÁÉÍÓÚ";
-        // Cadena de caracteres ASCII que reemplazarán los originales.
-        String ascii = "aeiouAEIOU";
-        String output = input;
-        for (int i=0; i<original.length(); i++) {
-            // Reemplazamos los caracteres especiales.
-            output = output.replace(original.charAt(i), ascii.charAt(i));
-        }//for i
-        return output;
-    }   */
 
 }

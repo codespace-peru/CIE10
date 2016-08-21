@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1050857546643",
+    "firebase_url": "https://admob-app-id-1971088040.firebaseio.com",
+    "project_id": "admob-app-id-1971088040",
+    "storage_bucket": "admob-app-id-1971088040.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050857546643:android:77174c068b8ef3de",
+        "android_client_info": {
+          "package_name": "pe.com.codespace.cie10"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1050857546643-t95g7nnf9b1r5e2q2osise38jms3dj82.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLGR3zCuEAUIP6ASR9PPWiIJd6ToLwJsc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

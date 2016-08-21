@@ -20,7 +20,7 @@ import java.lang.reflect.Array;
  */
 public class SQLiteHelperCIE10 extends SQLiteOpenHelper {
     private final Context myContext;
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static final String DATABASE_NAME = "cie10.db";
     private static final String DATABASE_PATH = "databases/";
     private static File DATABASE_FILE = null;
@@ -220,23 +220,29 @@ public class SQLiteHelperCIE10 extends SQLiteOpenHelper {
     public String[][] getCategorias(String codInicial, String codFinal){
         SQLiteDatabase db = null;
         Cursor cursor=null;
+
         try{
             db = getReadableDatabase();
             String[] array = new String[2];
             array[0] = codInicial;
             array[1] = codFinal;
-            cursor = db.rawQuery("SELECT codCategoria, nombreCategoria FROM categorias WHERE codCategoria >= ? AND codCategoria <= ?", array);
-            String[][] arrayOfString = (String[][]) Array.newInstance(String.class, cursor.getCount(), 2);
+
+            //db.beginTransaction();
+            cursor = db.rawQuery("SELECT codCategoria, nombreCategoria, es_favorito FROM categorias WHERE codCategoria BETWEEN ? AND ?", array);
+            String[][] arrayOfString = (String[][]) Array.newInstance(String.class, cursor.getCount(), 3);
             int i = 0;
             if (cursor.moveToFirst()) {
                 while ( !cursor.isAfterLast() ) {
                     arrayOfString[i][0] = cursor.getString(0);
                     arrayOfString[i][1] = cursor.getString(1);
+                    arrayOfString[i][2] = cursor.getString(2);
                     i++;
                     cursor.moveToNext();
                 }
             }
-            cursor.close();
+            //db.setTransactionSuccessful();
+            //db.endTransaction();
+            //cursor.close();
             return arrayOfString;
         }
         catch (SQLiteException ex){
@@ -320,12 +326,18 @@ public class SQLiteHelperCIE10 extends SQLiteOpenHelper {
         try{
             boolean flag = false;
             db = getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put("codCategory",codCat);
-            long x = db.insert("favoritos", null, values);
-            if (x > 0){
+            db.beginTransaction();
+            ContentValues values1 = new ContentValues();
+            values1.put("codCategory",codCat);
+            long x = db.insert("favoritos", null, values1);
+            ContentValues values2 = new ContentValues();
+            values2.put("es_favorito",1);
+            String[] whereArgs={codCat};
+            int y = db.update("categorias", values2, "codCategoria=?", whereArgs);
+            if (x + y >= 2)
                 flag=true;
-            }
+            db.setTransactionSuccessful();
+            db.endTransaction();
             return flag;
         } catch (SQLiteException ex){
             ex.printStackTrace();
@@ -343,11 +355,17 @@ public class SQLiteHelperCIE10 extends SQLiteOpenHelper {
         try{
             boolean flag = false;
             db = getWritableDatabase();
-            String[] whereArgs={codCat};
-            int x = db.delete("favoritos","codCategory = ?", whereArgs);
-            if (x > 0){
+            db.beginTransaction();
+            String[] whereArgs0={codCat};
+            int x = db.delete("favoritos","codCategory = ?", whereArgs0);
+            ContentValues values = new ContentValues();
+            values.put("es_favorito",0);
+            int y = db.update("categorias",values,"codCategoria=?",whereArgs0);
+            if (x + y >= 2){
                 flag=true;
             }
+            db.setTransactionSuccessful();
+            db.endTransaction();
             return flag;
         } catch (SQLiteException ex){
             ex.printStackTrace();

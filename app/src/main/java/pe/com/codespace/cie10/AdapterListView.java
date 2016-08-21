@@ -4,27 +4,46 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.util.List;
-
+import java.util.ArrayList;
+import pe.com.codespace.cie10.Tools.RowCategoria;
 
 /**
  * Creado por Carlos on 17/02/14.
  */
-public class AdapterListView extends ArrayAdapter<Tools.RowCategoria> {
+public class AdapterListView extends BaseAdapter implements Filterable {
 
     private final Context context;
-    private final List<Tools.RowCategoria> values;
+    private ArrayList<RowCategoria> values;
     SQLiteHelperCIE10 myDBHelper;
+    CustomFilter filter;
+    private ArrayList<RowCategoria> filterList;
 
-    public AdapterListView(Context pContext, List<Tools.RowCategoria> pValues) {
-        super(pContext, R.layout.explistview_capitulo, pValues);
+    public AdapterListView(Context pContext, ArrayList<RowCategoria> pValues) {
         this.context = pContext;
         this.values = pValues;
+        this.filterList = pValues;
         myDBHelper = SQLiteHelperCIE10.getInstance(context);
+    }
+
+    @Override
+    public int getCount() {
+        return values.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return values.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     @Override
@@ -42,7 +61,7 @@ public class AdapterListView extends ArrayAdapter<Tools.RowCategoria> {
             holder = (Tools.TextHolderCategoria) view.getTag();
         }
 
-        final Tools.RowCategoria arts = values.get(position);
+        final RowCategoria arts = values.get(position);
         holder.myNumCap.setText(String.valueOf(arts.numCap));
         holder.myNumGrupo.setText(String.valueOf(arts.numGroup));
         holder.myCodigo.setText(arts.codigoCategoria);
@@ -64,11 +83,11 @@ public class AdapterListView extends ArrayAdapter<Tools.RowCategoria> {
                 if (flag) {
                     myDBHelper.eliminarFavorito(codCat);
                     imageView.setImageResource(R.drawable.favorito_off);
-                    Toast.makeText(context, codCat + " " + context.getResources().getString(R.string.text_del_favorites) , Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, codCat + " " + context.getResources().getString(R.string.text_del_favorites) , Toast.LENGTH_SHORT).show();
                 } else {
                     myDBHelper.setFavorito(codCat);
                     imageView.setImageResource(R.drawable.favorito_on);
-                    Toast.makeText(context, codCat + " " + context.getResources().getString(R.string.text_add_favorites), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, codCat + " " + context.getResources().getString(R.string.text_add_favorites), Toast.LENGTH_SHORT).show();
                 }
 				if (context instanceof TextActivity) {
                     ((TextActivity) context).prepararData();
@@ -78,5 +97,45 @@ public class AdapterListView extends ArrayAdapter<Tools.RowCategoria> {
         });
 
         return view;
+    }
+
+    @Override
+    public Filter getFilter() {
+        if(filter ==null){
+            filter = new CustomFilter();
+        }
+
+        return filter;
+    }
+
+    class CustomFilter extends Filter{
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults results = new FilterResults();
+            if(constraint != null && constraint.length()>0){
+                constraint = constraint.toString().toUpperCase();
+                ArrayList<RowCategoria> filters = new ArrayList<>();
+                for(int i=0; i<filterList.size();i++){
+                    if(filterList.get(i).nombreCategoria.toUpperCase().contains(constraint)){
+                        RowCategoria row = new RowCategoria(filterList.get(i).numCap, filterList.get(i).numGroup, filterList.get(i).codigoCategoria, filterList.get(i).nombreCategoria, filterList.get(i).favorito);
+                        filters.add(row);
+                    }
+                }
+                results.count = filters.size();
+                results.values = filters;
+            }
+            else {
+                results.count = filterList.size();
+                results.values = filterList;
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            values = (ArrayList<RowCategoria>) results.values;
+            notifyDataSetChanged();
+        }
     }
 }

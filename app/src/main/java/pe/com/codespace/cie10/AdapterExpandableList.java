@@ -1,6 +1,7 @@
 package pe.com.codespace.cie10;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,10 +75,25 @@ class AdapterExpandableList extends BaseExpandableListAdapter {
             holder = (Tools.TextHolderCapitulo) row.getTag();
         }
 
-        Tools.RowCapitulo temp = (Tools.RowCapitulo) getGroup(groupPosition);
+        final Tools.RowCapitulo temp = (Tools.RowCapitulo) getGroup(groupPosition);
         holder.myNumCap.setText(String.valueOf(temp.numCap));
         holder.myTitle1.setText(temp.title1);
-        holder.myTitle2.setText(temp.title2);
+        holder.myTitle2.setText(temp.title2 + " (" + temp.codInicial + "-" + temp.codFinal+ ")");
+        holder.myCodInicial.setText(temp.codInicial);
+        holder.myCodFinal.setText(temp.codFinal);
+
+        holder.myImageCap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, TextActivity.class);
+                intent.putExtra("numerocapitulo",temp.numCap);
+                intent.putExtra("numerogrupo",0);
+                intent.putExtra("nombregrupo",temp.title2);
+                intent.putExtra("codigoInicial", temp.codInicial);
+                intent.putExtra("codigoFinal", temp.codFinal);
+                context.startActivity(intent);
+            }
+        });
         return row;
     }
 

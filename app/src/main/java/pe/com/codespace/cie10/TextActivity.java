@@ -15,23 +15,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class TextActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     SQLiteHelperCIE10 myDBHelper;
-    List<Tools.RowCategoria> miArray;
+    ArrayList<Tools.RowCategoria> miArray;
     SearchView searchView;
+    TextView textView;
     MenuItem menuItem;
     String codInicial;
     String codFinal;
@@ -53,28 +52,27 @@ public class TextActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.myToolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         context = this;
         myDBHelper = SQLiteHelperCIE10.getInstance(this);
         myList = (ListView) findViewById(R.id.lvText);
+        textView = (TextView) findViewById(R.id.tvFavoritos);
 
         codInicial = getIntent().getExtras().getString("codigoInicial");
         codFinal = getIntent().getExtras().getString("codigoFinal");
         nombreGrupo = getIntent().getExtras().getString("nombregrupo");
         capitulo = getIntent().getExtras().getInt("numerocapitulo");
         grupo = getIntent().getExtras().getInt("numerogrupo");
-        prepararData();
 
         if(getSupportActionBar()!=null){
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(true);
             getSupportActionBar().setTitle(nombreGrupo);
+            getSupportActionBar().setSubtitle("(" +codInicial + "-" +codFinal+")");
         }
 
-        cargarData();
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -95,27 +93,17 @@ public class TextActivity extends AppCompatActivity implements SearchView.OnQuer
         //Agregar el adView
         AdView adView = (AdView)this.findViewById(R.id.adViewText);
         AdRequest adRequest = new AdRequest.Builder().build();
+        assert adView != null;
         adView.loadAd(adRequest);
-
-        //Analytics
-        Tracker tracker = ((AnalyticsApplication)  getApplication()).getTracker(AnalyticsApplication.TrackerName.APP_TRACKER);
-        String nameActivity = getApplicationContext().getPackageName() + "." + this.getClass().getSimpleName();
-        tracker.setScreenName(nameActivity);
-        tracker.enableAdvertisingIdCollection(true);
-        tracker.send(new HitBuilders.AppViewBuilder().build());
 
     }
 
     public void prepararData() {
         String[][] rows = myDBHelper.getCategorias(codInicial,codFinal);
         miArray = new ArrayList<>();
-        boolean flag;
-        int fav;
 
         for (String[] row : rows) {
-            flag = myDBHelper.es_favorito(row[0]);
-            if(flag)  fav=1; else fav=0;
-            Tools.RowCategoria rowCategoria = new Tools.RowCategoria(capitulo, grupo, row[0], row[1], fav);
+            Tools.RowCategoria rowCategoria = new Tools.RowCategoria(capitulo, grupo, row[0], row[1],Integer.parseInt(row[2]));
             miArray.add(rowCategoria);
         }
     }
@@ -123,7 +111,13 @@ public class TextActivity extends AppCompatActivity implements SearchView.OnQuer
 	public void cargarData(){
         myListAdapter = new AdapterListView(this, miArray);
         myList.setAdapter(myListAdapter);
+        textView.setText(getResources().getString(R.string.show_ocurrencias1) + " " + myList.getCount() + " " + getResources().getString(R.string.show_ocurrencias3));
 	}
+
+    private void MostrarCantidadFiltro(int cant) {
+        assert textView != null;
+        textView.setText(getResources().getString(R.string.show_ocurrencias1) + " " + cant + " " + getResources().getString(R.string.show_ocurrencias3));
+    }
 
 
     @Override
@@ -141,12 +135,11 @@ public class TextActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_actionbar_main, menu);
+        getMenuInflater().inflate(R.menu.menu_actionbar_text, menu);
         final MenuItem searchItem = menu.findItem(R.id.action_search);
-        
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(this);
-        searchView.setQueryHint(getResources().getString(R.string.action_search) + "...");
+        searchView.setQueryHint(getResources().getString(R.string.action_filter) + "...");
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -175,13 +168,18 @@ public class TextActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    public boolean onQueryTextSubmit(String query) {        
-        Tools.QuerySubmit(this, menuItem, query);
-        return true;
+    public boolean onQueryTextSubmit(String query) {
+        return false;
     }
 
     @Override
     public boolean onQueryTextChange(String s) {
+        myListAdapter.getFilter().filter(s, new Filter.FilterListener() {
+            @Override
+            public void onFilterComplete(int count) {
+                MostrarCantidadFiltro(count);
+            }
+        });
         return false;
     }
 
